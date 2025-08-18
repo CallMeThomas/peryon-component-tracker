@@ -1,0 +1,21 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+
+#ide folders
+.vscode/
+.idea/
+.vs/
+*.user
+
+# vite file
+
+**/.vite/**
+
+# macOS system files
+.DS_Store
+**/.DS_Store
+
+.editorconfig

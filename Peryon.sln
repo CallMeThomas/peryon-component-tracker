@@ -1,0 +1,85 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35506.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B95CE050-8D7E-4379-843F-B66AE731208E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aspire", "aspire", "{318324D7-C65D-4A7E-8B86-7A2483026F3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peryon", "backend\Peryon\Peryon.csproj", "{BD8DF6F3-F6C0-4414-9CEF-35EE4B874262}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peryon.AppHost", "aspire\Peryon.AppHost\Peryon.AppHost.csproj", "{5F2F19C7-124F-4377-97AC-4172672466AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peryon.ServiceDefaults", "aspire\Peryon.ServiceDefaults\Peryon.ServiceDefaults.csproj", "{45B0D5B7-8E6D-4B17-8192-5A5578BB816F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peryon.Core", "backend\Peryon.Core\Peryon.Core.csproj", "{DACE7FE7-1883-4246-89C6-855F1C8A2494}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AD09541B-E0CC-4438-8C29-4C7F82A4EDC5}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peryon.Infrastructure", "backend\Peryon.Infrastructure\Peryon.Infrastructure.csproj", "{6B9B3505-0BC0-4BE5-8AE2-8A75FEDDFB6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peryon.SharedKernel", "backend\Peryon.SharedKernel\Peryon.SharedKernel.csproj", "{FFF74714-2C5F-4AFE-8969-6F3EAA2EF4E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peryon.MigrationWorker", "backend\Peryon.MigrationWorker\Peryon.MigrationWorker.csproj", "{80711674-B890-4596-BBFF-7D5E16EB6A3A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{BDB4A2AF-98B2-4B65-9A94-25033416EBEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peryon.Application", "backend\Peryon.Application\Peryon.Application.csproj", "{DF9C14E0-AF5B-4A62-B033-E8721BE0EA6C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD8DF6F3-F6C0-4414-9CEF-35EE4B874262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD8DF6F3-F6C0-4414-9CEF-35EE4B874262}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD8DF6F3-F6C0-4414-9CEF-35EE4B874262}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD8DF6F3-F6C0-4414-9CEF-35EE4B874262}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F2F19C7-124F-4377-97AC-4172672466AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F2F19C7-124F-4377-97AC-4172672466AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F2F19C7-124F-4377-97AC-4172672466AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F2F19C7-124F-4377-97AC-4172672466AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45B0D5B7-8E6D-4B17-8192-5A5578BB816F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45B0D5B7-8E6D-4B17-8192-5A5578BB816F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45B0D5B7-8E6D-4B17-8192-5A5578BB816F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45B0D5B7-8E6D-4B17-8192-5A5578BB816F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DACE7FE7-1883-4246-89C6-855F1C8A2494}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DACE7FE7-1883-4246-89C6-855F1C8A2494}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DACE7FE7-1883-4246-89C6-855F1C8A2494}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DACE7FE7-1883-4246-89C6-855F1C8A2494}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B9B3505-0BC0-4BE5-8AE2-8A75FEDDFB6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B9B3505-0BC0-4BE5-8AE2-8A75FEDDFB6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B9B3505-0BC0-4BE5-8AE2-8A75FEDDFB6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B9B3505-0BC0-4BE5-8AE2-8A75FEDDFB6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFF74714-2C5F-4AFE-8969-6F3EAA2EF4E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFF74714-2C5F-4AFE-8969-6F3EAA2EF4E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFF74714-2C5F-4AFE-8969-6F3EAA2EF4E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFF74714-2C5F-4AFE-8969-6F3EAA2EF4E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80711674-B890-4596-BBFF-7D5E16EB6A3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80711674-B890-4596-BBFF-7D5E16EB6A3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80711674-B890-4596-BBFF-7D5E16EB6A3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80711674-B890-4596-BBFF-7D5E16EB6A3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF9C14E0-AF5B-4A62-B033-E8721BE0EA6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF9C14E0-AF5B-4A62-B033-E8721BE0EA6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF9C14E0-AF5B-4A62-B033-E8721BE0EA6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF9C14E0-AF5B-4A62-B033-E8721BE0EA6C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BD8DF6F3-F6C0-4414-9CEF-35EE4B874262} = {B95CE050-8D7E-4379-843F-B66AE731208E}
+		{5F2F19C7-124F-4377-97AC-4172672466AD} = {318324D7-C65D-4A7E-8B86-7A2483026F3C}
+		{45B0D5B7-8E6D-4B17-8192-5A5578BB816F} = {318324D7-C65D-4A7E-8B86-7A2483026F3C}
+		{DACE7FE7-1883-4246-89C6-855F1C8A2494} = {B95CE050-8D7E-4379-843F-B66AE731208E}
+		{6B9B3505-0BC0-4BE5-8AE2-8A75FEDDFB6E} = {B95CE050-8D7E-4379-843F-B66AE731208E}
+		{FFF74714-2C5F-4AFE-8969-6F3EAA2EF4E5} = {B95CE050-8D7E-4379-843F-B66AE731208E}
+		{80711674-B890-4596-BBFF-7D5E16EB6A3A} = {B95CE050-8D7E-4379-843F-B66AE731208E}
+		{DF9C14E0-AF5B-4A62-B033-E8721BE0EA6C} = {BDB4A2AF-98B2-4B65-9A94-25033416EBEF}
+	EndGlobalSection
+EndGlobal

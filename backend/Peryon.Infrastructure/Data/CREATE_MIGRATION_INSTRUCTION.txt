@@ -1,0 +1,2 @@
+﻿﻿-- RUN THIS FROM Peryon project folder
+ dotnet ef migrations add MigrationName -c appdbcontext -p ../Peryon.Infrastructure/Peryon.Infrastructure.csproj -s Peryon.csproj -o Data/Migrations
