@@ -11,7 +11,7 @@ export interface SyncResult {
 // Sync with Strava
 export const useStravaSync = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation<SyncResult, Error>({
     mutationFn: async () => {
       return makeRequest<SyncResult>({
@@ -100,7 +100,7 @@ export const useStravaWebhookStatus = () => {
 // Link Strava gear to bike
 export const useLinkStravaGear = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation<void, Error, { bikeId: string; stravaGearId: string }>({
     mutationFn: async ({ bikeId, stravaGearId }) => {
       return makeRequest<void>({
@@ -120,9 +120,9 @@ export const useLinkStravaGear = () => {
 // Unlink Strava gear from bike
 export const useUnlinkStravaGear = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation<void, Error, string>({
-    mutationFn: async (bikeId) => {
+    mutationFn: async bikeId => {
       return makeRequest<void>({
         method: 'DELETE',
         url: `/bikes/${bikeId}/unlink-strava-gear`,

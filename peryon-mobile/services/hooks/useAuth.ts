@@ -17,7 +17,7 @@ export const useStravaAuth = () => {
         data: { stravaAccessToken },
       });
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       setAuthToken(data.token);
     },
     onError: () => {
@@ -35,7 +35,7 @@ export const useRefreshToken = () => {
         url: '/auth/refresh',
       });
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       setAuthToken(data.token);
     },
     onError: () => {
@@ -63,7 +63,7 @@ export const useCurrentUser = (enabled: boolean = true) => {
 // Update user
 export const useUpdateUser = () => {
   return useMutation<User, Error, Partial<User>>({
-    mutationFn: async (userData) => {
+    mutationFn: async userData => {
       return makeRequest<User>({
         method: 'PUT',
         url: '/user/me',

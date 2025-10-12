@@ -1,16 +1,29 @@
-import { useEffect } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function AuthCallback() {
+const AuthCallback: React.FC = () => {
   const { code, state, error } = useLocalSearchParams();
   const router = useRouter();
   const { processAuthCallback } = useAuth();
 
+  const styles = StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      backgroundColor: '#fff',
+      flex: 1,
+      justifyContent: 'center',
+    },
+    loadingText: {
+      fontSize: 16,
+      marginTop: 16,
+    },
+  });
+
   useEffect(() => {
-    console.log('🔄 Auth callback received:', { code, state, error });
-    
+    console.info('🔄 Auth callback received:', { code, state, error });
+
     if (error) {
       console.error('❌ OAuth error:', error);
       // Handle error - redirect to login or show error
@@ -19,28 +32,23 @@ export default function AuthCallback() {
     }
 
     if (code) {
-      console.log('✅ Authorization code received:', code);
+      console.info('✅ Authorization code received:', code);
       // Process the authorization code
       processAuthCallback(code as string, state as string);
       // Redirect to main app
       router.replace('/(tabs)');
     } else {
-      console.log('⚠️ No code received, redirecting to home');
+      console.warn('⚠️ No code received, redirecting to home');
       router.replace('/');
     }
-  }, [code, state, error]);
+  }, [code, state, error, processAuthCallback, router]);
 
   return (
-    <View style={{ 
-      flex: 1, 
-      justifyContent: 'center', 
-      alignItems: 'center',
-      backgroundColor: '#fff'
-    }}>
+    <View style={styles.container}>
       <ActivityIndicator size="large" color="#FC4C02" />
-      <Text style={{ marginTop: 16, fontSize: 16 }}>
-        Processing authentication...
-      </Text>
+      <Text style={styles.loadingText}>Processing authentication...</Text>
     </View>
   );
-}
+};
+
+export default AuthCallback;

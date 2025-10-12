@@ -48,7 +48,7 @@ export enum ComponentType {
   Tires = 'tires',
   Tubes = 'tubes',
   Cables = 'cables',
-  Other = 'other'
+  Other = 'other',
 }
 
 export enum BikeType {
@@ -57,7 +57,7 @@ export enum BikeType {
   Gravel = 'gravel',
   Hybrid = 'hybrid',
   Electric = 'electric',
-  Other = 'other'
+  Other = 'other',
 }
 
 // API Response types

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import * as AuthSession from 'expo-auth-session';
 import * as Crypto from 'expo-crypto';
 import { User } from '../types';
@@ -23,7 +29,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [stravaAccessToken, setStravaAccessToken] = useState<string | null>(null);
+  const [stravaAccessToken, setStravaAccessToken] = useState<string | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
 
   // Strava OAuth configuration
@@ -31,8 +39,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     scheme: 'peryon',
     path: 'auth',
   });
-  
-  console.log('🔗 Redirect URI:', redirectUri);
 
   const discovery = {
     authorizationEndpoint: 'https://www.strava.com/oauth/authorize',
@@ -50,11 +56,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         { encoding: Crypto.CryptoEncoding.BASE64 }
       );
 
-      console.log('🚀 Starting login with Client ID:', process.env.EXPO_PUBLIC_STRAVA_CLIENT_ID);
-      console.log('🔗 Using Redirect URI:', redirectUri);
-      
       const request = new AuthSession.AuthRequest({
-        clientId: process.env.EXPO_PUBLIC_STRAVA_CLIENT_ID || 'your_strava_client_id',
+        clientId:
+          process.env.EXPO_PUBLIC_STRAVA_CLIENT_ID || 'your_strava_client_id',
         scopes: ['read,activity:read'],
         redirectUri,
         responseType: AuthSession.ResponseType.Code,
@@ -65,16 +69,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       const result = await request.promptAsync(discovery);
-      
-      console.log('📱 OAuth result:', result);
+
+      console.info('📱 OAuth result:', result);
 
       if (result.type === 'success') {
         const { code } = result.params;
-        
+
         // Exchange code for access token
         // This should be done through your backend API for security
         // For now, we'll simulate a successful login
-        
+
         const mockUser: User = {
           id: '1',
           firstName: 'John',
@@ -114,11 +118,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       // This would typically call your backend API to refresh user data
       // For now, we'll just simulate a refresh
-      console.log('Refreshing user data...');
-      
+      console.info('Refreshing user data...');
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
     } catch (error) {
       console.error('Error refreshing user data:', error);
     } finally {
@@ -126,19 +129,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const processAuthCallback = async (code: string, state: string): Promise<void> => {
+  const processAuthCallback = async (
+    code: string,
+    state: string
+  ): Promise<void> => {
     try {
       setLoading(true);
-      console.log('🔄 Processing auth callback with code:', code);
-      
+      console.info('🔄 Processing auth callback with code:', code);
+
       // In a real app, you would:
       // 1. Send the authorization code to your backend
       // 2. Your backend exchanges it for an access token with Strava
       // 3. Your backend returns user data and stores the token securely
-      
+
       // For now, we'll simulate a successful token exchange
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const mockUser: User = {
         id: '1',
         firstName: 'John',
@@ -151,9 +157,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAuthenticated(true);
       setUser(mockUser);
       setStravaAccessToken('mock_access_token');
-      
-      console.log('✅ Authentication successful!');
-      
+
+      console.info('✅ Authentication successful!');
     } catch (error) {
       console.error('❌ Error processing auth callback:', error);
       setIsAuthenticated(false);
@@ -183,9 +188,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 

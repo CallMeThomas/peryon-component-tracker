@@ -9,27 +9,30 @@ Mobile app for tracking bike components and maintenance with Strava integration.
 - **React Native Paper** (Material Design)
 - **Expo Router** for navigation
 - **TanStack Query** (React Query) for server state
-- **Axios** for HTTP requests  
+- **Axios** for HTTP requests
 - **React Context** for auth state management
 - **Expo AuthSession** for Strava OAuth
 
 ## Setup
 
 1. **Install dependencies**
+
    ```bash
    yarn install
    ```
 
 2. **Environment Configuration**
+
    ```bash
    cp .env.example .env
    ```
-   
+
    Update `.env` with your actual values:
    - `EXPO_PUBLIC_API_URL`: Your .NET backend URL
    - `EXPO_PUBLIC_STRAVA_CLIENT_ID`: Your Strava app client ID
 
 3. **Start the development server**
+
    ```bash
    yarn start
    ```
@@ -66,6 +69,7 @@ Mobile app for tracking bike components and maintenance with Strava integration.
 ## Features
 
 ### Current Features
+
 - ✅ Tab navigation with Material Design
 - ✅ Strava OAuth authentication
 - ✅ Bike management screens
@@ -75,6 +79,7 @@ Mobile app for tracking bike components and maintenance with Strava integration.
 - ✅ React Query for API state management
 
 ### Planned Features
+
 - 🔄 Real API integration with .NET backend
 - 🔄 Strava activity sync
 - 🔄 Component maintenance reminders
@@ -85,11 +90,13 @@ Mobile app for tracking bike components and maintenance with Strava integration.
 ## Development
 
 ### Running Tests
+
 ```bash
 yarn test
 ```
 
 ### Building for Production
+
 ```bash
 # Development build
 yarn build
@@ -110,7 +117,7 @@ const { mutate: login } = useStravaAuth();
 const { data: bikes, isLoading } = useBikes();
 const { mutate: createBike } = useCreateBike();
 
-// Components  
+// Components
 const { data: components } = useComponents(bikeId);
 const { mutate: updateComponent } = useUpdateComponent();
 

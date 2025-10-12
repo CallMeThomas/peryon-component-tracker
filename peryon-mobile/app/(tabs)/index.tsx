@@ -4,39 +4,63 @@ import { Card, Text, Button, useTheme, Appbar } from 'react-native-paper';
 import { useAuth } from '../../contexts/AuthContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function HomeScreen(): JSX.Element {
+const HomeScreen: React.FC = () => {
   const theme = useTheme();
   const { user, isAuthenticated, login, logout } = useAuth();
 
   const styles = StyleSheet.create({
+    boldText: {
+      fontWeight: 'bold',
+    },
     container: {
-      flex: 1,
       backgroundColor: theme.colors.background,
+      flex: 1,
     },
     content: {
       flex: 1,
       padding: 16,
     },
-    welcomeCard: {
-      marginBottom: 16,
+    errorText: {
+      color: theme.colors.error,
+      fontWeight: 'bold',
     },
-    statsCard: {
-      marginBottom: 16,
+    loginCard: {
+      padding: 24,
+      width: '100%',
+    },
+    loginContainer: {
+      alignItems: 'center',
+      flex: 1,
+      justifyContent: 'center',
+      padding: 32,
+    },
+    overviewText: {
+      marginTop: 8,
     },
     row: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginBottom: 8,
     },
-    loginContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 32,
+    sectionTitle: {
+      marginBottom: 16,
     },
-    loginCard: {
-      width: '100%',
-      padding: 24,
+    statsCard: {
+      marginBottom: 16,
+    },
+    subtleText: {
+      color: theme.colors.onSurfaceVariant,
+    },
+    welcomeCard: {
+      marginBottom: 16,
+    },
+    welcomeSubtitle: {
+      marginBottom: 24,
+      textAlign: 'center',
+    },
+    welcomeTitle: {
+      marginBottom: 16,
+      textAlign: 'center',
     },
   });
 
@@ -49,14 +73,15 @@ export default function HomeScreen(): JSX.Element {
         <View style={styles.loginContainer}>
           <Card style={styles.loginCard}>
             <Card.Content>
-              <Text variant="headlineSmall" style={{ textAlign: 'center', marginBottom: 16 }}>
+              <Text variant="headlineSmall" style={styles.welcomeTitle}>
                 Welcome to Peryon
               </Text>
-              <Text variant="bodyMedium" style={{ textAlign: 'center', marginBottom: 24 }}>
-                Track your bike components and maintenance with Strava integration
+              <Text variant="bodyMedium" style={styles.welcomeSubtitle}>
+                Track your bike components and maintenance with Strava
+                integration
               </Text>
               <Button mode="contained" onPress={login}>
-                Connect with Strava
+                <Text>Connect with Strava</Text>
               </Button>
             </Card.Content>
           </Card>
@@ -71,48 +96,54 @@ export default function HomeScreen(): JSX.Element {
         <Appbar.Content title="Dashboard" />
         <Appbar.Action icon="logout" onPress={logout} />
       </Appbar.Header>
-      
+
       <ScrollView style={styles.content}>
         <Card style={styles.welcomeCard}>
           <Card.Content>
             <Text variant="headlineSmall">
               Welcome back, {user?.firstName}!
             </Text>
-            <Text variant="bodyMedium" style={{ marginTop: 8 }}>
-              Here's an overview of your bike components
+            <Text variant="bodyMedium" style={styles.overviewText}>
+              Here&apos;s an overview of your bike components
             </Text>
           </Card.Content>
         </Card>
 
         <Card style={styles.statsCard}>
           <Card.Content>
-            <Text variant="titleMedium" style={{ marginBottom: 16 }}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>
               Quick Stats
             </Text>
-            
+
             <View style={styles.row}>
               <Text variant="bodyMedium">Active Components:</Text>
-              <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>12</Text>
+              <Text variant="bodyMedium" style={styles.boldText}>
+                12
+              </Text>
             </View>
-            
+
             <View style={styles.row}>
               <Text variant="bodyMedium">Components Due Soon:</Text>
-              <Text variant="bodyMedium" style={{ fontWeight: 'bold', color: theme.colors.error }}>3</Text>
+              <Text variant="bodyMedium" style={styles.errorText}>
+                3
+              </Text>
             </View>
-            
+
             <View style={styles.row}>
               <Text variant="bodyMedium">Total Distance:</Text>
-              <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>2,457 km</Text>
+              <Text variant="bodyMedium" style={styles.boldText}>
+                2,457 km
+              </Text>
             </View>
           </Card.Content>
         </Card>
 
         <Card style={styles.statsCard}>
           <Card.Content>
-            <Text variant="titleMedium" style={{ marginBottom: 16 }}>
+            <Text variant="titleMedium" style={styles.sectionTitle}>
               Recent Activity
             </Text>
-            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
+            <Text variant="bodyMedium" style={styles.subtleText}>
               No recent Strava activities found.
             </Text>
           </Card.Content>
@@ -120,4 +151,6 @@ export default function HomeScreen(): JSX.Element {
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
+
+export default HomeScreen;

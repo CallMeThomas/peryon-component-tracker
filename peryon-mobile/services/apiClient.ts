@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ApiResponse } from '../types';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://localhost:7001/api';
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL || 'https://localhost:7001/api';
 
 // Create axios instance
 export const apiClient: AxiosInstance = axios.create({
@@ -26,31 +27,33 @@ export const setAuthToken = (token: string | null): void => {
 
 // Request interceptor
 apiClient.interceptors.request.use(
-  (config) => {
+  config => {
     if (authToken && !config.headers['Authorization']) {
       config.headers['Authorization'] = `Bearer ${authToken}`;
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 // Response interceptor
 apiClient.interceptors.response.use(
+  // tslint:disable-next-line @typescript-eslint/no-explicit-any
   (response: AxiosResponse<ApiResponse<any>>) => {
     return response;
   },
-  (error) => {
+  error => {
     if (error.response?.status === 401) {
       // Token expired or invalid
       setAuthToken(null);
       // You might want to trigger a logout here or redirect to login
     }
-    
+
     return Promise.reject({
-      message: error.response?.data?.message || error.message || 'An error occurred',
+      message:
+        error.response?.data?.message || error.message || 'An error occurred',
       status: error.response?.status || 0,
       errors: error.response?.data?.errors || [],
     });

@@ -1,11 +1,19 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
-import { Card, Text, Chip, FAB, useTheme, Appbar, Badge } from 'react-native-paper';
+import {
+  Card,
+  Text,
+  Chip,
+  FAB,
+  useTheme,
+  Appbar,
+  Badge,
+} from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { BikeType } from '../../types';
 
-export default function BikesScreen(): JSX.Element {
+const BikesScreen: React.FC = () => {
   const theme = useTheme();
 
   // Mock data - this would come from your API/state management
@@ -41,7 +49,9 @@ export default function BikesScreen(): JSX.Element {
     },
   ];
 
-  const getBikeTypeIcon = (type: BikeType): keyof typeof MaterialIcons.glyphMap => {
+  const getBikeTypeIcon = (
+    type: BikeType
+  ): keyof typeof MaterialIcons.glyphMap => {
     switch (type) {
       case BikeType.Road:
         return 'directions-bike';
@@ -72,60 +82,97 @@ export default function BikesScreen(): JSX.Element {
   };
 
   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
+    attentionTextError: {
+      color: theme.colors.error,
+      fontWeight: 'bold',
     },
-    content: {
-      flex: 1,
-      padding: 16,
+    attentionTextSuccess: {
+      color: theme.colors.primary,
+      fontWeight: 'bold',
+    },
+    badge: {
+      backgroundColor: theme.colors.error,
+      position: 'absolute',
+      right: -8,
+      top: -8,
+    },
+    badgeContainer: {
+      position: 'relative',
     },
     bikeCard: {
       marginBottom: 12,
     },
-    cardHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 12,
+    bikeIcon: {
+      marginRight: 8,
     },
     bikeInfo: {
       flex: 1,
     },
     bikeTitle: {
-      flexDirection: 'row',
       alignItems: 'center',
+      flexDirection: 'row',
       marginBottom: 4,
     },
-    bikeIcon: {
-      marginRight: 8,
+    boldText: {
+      fontWeight: 'bold',
     },
-    statsRow: {
+    cardHeader: {
+      alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems: 'center',
-      marginTop: 8,
+      marginBottom: 12,
     },
-    statItem: {
-      alignItems: 'center',
+    container: {
+      backgroundColor: theme.colors.background,
+      flex: 1,
     },
-    fab: {
-      position: 'absolute',
-      margin: 16,
-      right: 0,
-      bottom: 0,
+    content: {
+      flex: 1,
+      padding: 16,
     },
     emptyState: {
+      alignItems: 'center',
       flex: 1,
       justifyContent: 'center',
-      alignItems: 'center',
       padding: 32,
+    },
+    emptySubtitle: {
+      marginBottom: 24,
+      textAlign: 'center',
+    },
+    emptyTitle: {
+      marginBottom: 16,
+      textAlign: 'center',
+    },
+    fab: {
+      bottom: 0,
+      margin: 16,
+      position: 'absolute',
+      right: 0,
+    },
+    flexOne: {
+      flex: 1,
     },
     inactiveCard: {
       opacity: 0.6,
     },
-    badgeContainer: {
-      position: 'relative',
+    inactiveText: {
+      color: theme.colors.error,
+    },
+    statItem: {
+      alignItems: 'center',
+    },
+    statsRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 8,
+    },
+    subtleText: {
+      color: theme.colors.onSurfaceVariant,
+    },
+    syncedText: {
+      color: theme.colors.onSurfaceVariant,
     },
   });
 
@@ -136,12 +183,12 @@ export default function BikesScreen(): JSX.Element {
           <Appbar.Content title="Bikes" />
           <Appbar.Action icon="plus" onPress={() => console.log('Add bike')} />
         </Appbar.Header>
-        
+
         <View style={styles.emptyState}>
-          <Text variant="headlineSmall" style={{ textAlign: 'center', marginBottom: 16 }}>
+          <Text variant="headlineSmall" style={styles.emptyTitle}>
             No Bikes Yet
           </Text>
-          <Text variant="bodyMedium" style={{ textAlign: 'center', marginBottom: 24 }}>
+          <Text variant="bodyMedium" style={styles.emptySubtitle}>
             Add your first bike to start tracking components
           </Text>
         </View>
@@ -159,17 +206,17 @@ export default function BikesScreen(): JSX.Element {
     <SafeAreaView style={styles.container}>
       <Appbar.Header>
         <Appbar.Content title="Bikes" />
-        <Appbar.Action icon="sync" onPress={() => console.log('Sync with Strava')} />
+        <Appbar.Action
+          icon="sync"
+          onPress={() => console.log('Sync with Strava')}
+        />
       </Appbar.Header>
-      
+
       <ScrollView style={styles.content}>
-        {mockBikes.map((bike) => (
-          <Card 
-            key={bike.id} 
-            style={[
-              styles.bikeCard, 
-              !bike.isActive && styles.inactiveCard
-            ]}
+        {mockBikes.map(bike => (
+          <Card
+            key={bike.id}
+            style={[styles.bikeCard, !bike.isActive && styles.inactiveCard]}
           >
             <Card.Content>
               <View style={styles.cardHeader}>
@@ -181,24 +228,24 @@ export default function BikesScreen(): JSX.Element {
                       color={getBikeTypeColor(bike.type)}
                       style={styles.bikeIcon}
                     />
-                    <View style={{ flex: 1 }}>
+                    <View style={styles.flexOne}>
                       <Text variant="titleMedium">{bike.name}</Text>
                       {bike.stravaGearId && (
-                        <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                        <Text variant="bodySmall" style={styles.syncedText}>
                           Synced with Strava
                         </Text>
                       )}
                       {!bike.isActive && (
-                        <Text variant="bodySmall" style={{ color: theme.colors.error }}>
+                        <Text variant="bodySmall" style={styles.inactiveText}>
                           Inactive
                         </Text>
                       )}
                     </View>
                   </View>
                 </View>
-                
+
                 <View style={styles.badgeContainer}>
-                  <Chip 
+                  <Chip
                     mode="outlined"
                     textStyle={{ color: getBikeTypeColor(bike.type) }}
                     style={{ borderColor: getBikeTypeColor(bike.type) }}
@@ -206,15 +253,7 @@ export default function BikesScreen(): JSX.Element {
                     {bike.type}
                   </Chip>
                   {bike.componentsNeedingAttention > 0 && (
-                    <Badge 
-                      size={20}
-                      style={{ 
-                        position: 'absolute', 
-                        top: -8, 
-                        right: -8,
-                        backgroundColor: theme.colors.error 
-                      }}
-                    >
+                    <Badge size={20} style={styles.badge}>
                       {bike.componentsNeedingAttention}
                     </Badge>
                   )}
@@ -223,34 +262,35 @@ export default function BikesScreen(): JSX.Element {
 
               <View style={styles.statsRow}>
                 <View style={styles.statItem}>
-                  <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>
+                  <Text variant="titleMedium" style={styles.boldText}>
                     {bike.totalDistance.toLocaleString()}
                   </Text>
-                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                  <Text variant="bodySmall" style={styles.subtleText}>
                     km total
                   </Text>
                 </View>
-                
+
                 <View style={styles.statItem}>
-                  <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>
+                  <Text variant="titleMedium" style={styles.boldText}>
                     {bike.activeComponents}
                   </Text>
-                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                  <Text variant="bodySmall" style={styles.subtleText}>
                     components
                   </Text>
                 </View>
-                
+
                 <View style={styles.statItem}>
-                  <Text 
-                    variant="titleMedium" 
-                    style={{ 
-                      fontWeight: 'bold',
-                      color: bike.componentsNeedingAttention > 0 ? theme.colors.error : theme.colors.primary 
-                    }}
+                  <Text
+                    variant="titleMedium"
+                    style={
+                      bike.componentsNeedingAttention > 0
+                        ? styles.attentionTextError
+                        : styles.attentionTextSuccess
+                    }
                   >
                     {bike.componentsNeedingAttention}
                   </Text>
-                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                  <Text variant="bodySmall" style={styles.subtleText}>
                     need attention
                   </Text>
                 </View>
@@ -267,4 +307,6 @@ export default function BikesScreen(): JSX.Element {
       />
     </SafeAreaView>
   );
-}
+};
+
+export default BikesScreen;

@@ -1,18 +1,24 @@
+import React from 'react';
 import { Tabs } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
 
-export default function TabLayout(): JSX.Element {
+const TabLayout: React.FC = () => {
   const theme = useTheme();
+
+  const styles = StyleSheet.create({
+    tabBar: {
+      backgroundColor: theme.colors.surface,
+    },
+  });
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.onSurfaceVariant,
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-        },
+        tabBarStyle: styles.tabBar,
         headerShown: false,
       }}
     >
@@ -54,4 +60,6 @@ export default function TabLayout(): JSX.Element {
       />
     </Tabs>
   );
-}
+};
+
+export default TabLayout;

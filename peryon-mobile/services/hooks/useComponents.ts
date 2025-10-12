@@ -49,31 +49,38 @@ export const useComponentsDue = () => {
 // Create component
 export const useCreateComponent = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation<BikeComponent, Error, Omit<BikeComponent, 'id'>>({
-    mutationFn: async (componentData) => {
+    mutationFn: async componentData => {
       return makeRequest<BikeComponent>({
         method: 'POST',
         url: '/components',
         data: componentData,
       });
     },
-    onSuccess: (newComponent) => {
+    onSuccess: newComponent => {
       // Update all components cache
-      queryClient.setQueryData<BikeComponent[]>(['components'], (oldComponents) => {
-        return oldComponents ? [...oldComponents, newComponent] : [newComponent];
-      });
-      
+      queryClient.setQueryData<BikeComponent[]>(
+        ['components'],
+        oldComponents => {
+          return oldComponents
+            ? [...oldComponents, newComponent]
+            : [newComponent];
+        }
+      );
+
       // Update bike-specific components cache if applicable
       if (newComponent.bikeId) {
         queryClient.setQueryData<BikeComponent[]>(
-          ['components', newComponent.bikeId], 
-          (oldComponents) => {
-            return oldComponents ? [...oldComponents, newComponent] : [newComponent];
+          ['components', newComponent.bikeId],
+          oldComponents => {
+            return oldComponents
+              ? [...oldComponents, newComponent]
+              : [newComponent];
           }
         );
       }
-      
+
       // Invalidate queries to refetch from server
       queryClient.invalidateQueries({ queryKey: ['components'] });
       queryClient.invalidateQueries({ queryKey: ['bikes'] }); // Bikes might have updated component counts
@@ -84,8 +91,12 @@ export const useCreateComponent = () => {
 // Update component
 export const useUpdateComponent = () => {
   const queryClient = useQueryClient();
-  
-  return useMutation<BikeComponent, Error, { id: string; data: Partial<BikeComponent> }>({
+
+  return useMutation<
+    BikeComponent,
+    Error,
+    { id: string; data: Partial<BikeComponent> }
+  >({
     mutationFn: async ({ id, data }) => {
       return makeRequest<BikeComponent>({
         method: 'PUT',
@@ -93,29 +104,43 @@ export const useUpdateComponent = () => {
         data,
       });
     },
-    onSuccess: (updatedComponent) => {
+    onSuccess: updatedComponent => {
       // Update all components cache
-      queryClient.setQueryData<BikeComponent[]>(['components'], (oldComponents) => {
-        return oldComponents?.map((component) => 
-          component.id === updatedComponent.id ? updatedComponent : component
-        ) || [];
-      });
-      
+      queryClient.setQueryData<BikeComponent[]>(
+        ['components'],
+        oldComponents => {
+          return (
+            oldComponents?.map(component =>
+              component.id === updatedComponent.id
+                ? updatedComponent
+                : component
+            ) || []
+          );
+        }
+      );
+
       // Update bike-specific components cache
       if (updatedComponent.bikeId) {
         queryClient.setQueryData<BikeComponent[]>(
-          ['components', updatedComponent.bikeId], 
-          (oldComponents) => {
-            return oldComponents?.map((component) => 
-              component.id === updatedComponent.id ? updatedComponent : component
-            ) || [];
+          ['components', updatedComponent.bikeId],
+          oldComponents => {
+            return (
+              oldComponents?.map(component =>
+                component.id === updatedComponent.id
+                  ? updatedComponent
+                  : component
+              ) || []
+            );
           }
         );
       }
-      
+
       // Update the specific component cache
-      queryClient.setQueryData(['components', 'detail', updatedComponent.id], updatedComponent);
-      
+      queryClient.setQueryData(
+        ['components', 'detail', updatedComponent.id],
+        updatedComponent
+      );
+
       // Invalidate due components as status might have changed
       queryClient.invalidateQueries({ queryKey: ['components', 'due'] });
       queryClient.invalidateQueries({ queryKey: ['bikes'] });
@@ -126,9 +151,9 @@ export const useUpdateComponent = () => {
 // Delete component
 export const useDeleteComponent = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation<void, Error, string>({
-    mutationFn: async (id) => {
+    mutationFn: async id => {
       return makeRequest<void>({
         method: 'DELETE',
         url: `/components/${id}`,
@@ -136,16 +161,23 @@ export const useDeleteComponent = () => {
     },
     onSuccess: (_, deletedId) => {
       // Remove from all components cache
-      queryClient.setQueryData<BikeComponent[]>(['components'], (oldComponents) => {
-        return oldComponents?.filter((component) => component.id !== deletedId) || [];
-      });
-      
+      queryClient.setQueryData<BikeComponent[]>(
+        ['components'],
+        oldComponents => {
+          return (
+            oldComponents?.filter(component => component.id !== deletedId) || []
+          );
+        }
+      );
+
       // Remove from bike-specific caches (we don't know which bike, so invalidate all)
       queryClient.invalidateQueries({ queryKey: ['components'] });
-      
+
       // Remove the specific component from cache
-      queryClient.removeQueries({ queryKey: ['components', 'detail', deletedId] });
-      
+      queryClient.removeQueries({
+        queryKey: ['components', 'detail', deletedId],
+      });
+
       // Invalidate bikes query as component counts might have changed
       queryClient.invalidateQueries({ queryKey: ['bikes'] });
     },
@@ -155,11 +187,15 @@ export const useDeleteComponent = () => {
 // Replace component (mark old as inactive, create new one)
 export const useReplaceComponent = () => {
   const queryClient = useQueryClient();
-  
-  return useMutation<BikeComponent, Error, { 
-    oldComponentId: string; 
-    newComponentData: Omit<BikeComponent, 'id'> 
-  }>({
+
+  return useMutation<
+    BikeComponent,
+    Error,
+    {
+      oldComponentId: string;
+      newComponentData: Omit<BikeComponent, 'id'>;
+    }
+  >({
     mutationFn: async ({ oldComponentId, newComponentData }) => {
       return makeRequest<BikeComponent>({
         method: 'POST',

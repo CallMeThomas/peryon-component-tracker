@@ -1,8 +1,8 @@
+import React from 'react';
 import { Stack } from 'expo-router';
 import { PaperProvider, MD3LightTheme } from 'react-native-paper';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '../contexts/AuthContext';
-import { JSX } from 'react';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -27,7 +27,7 @@ const theme = {
   },
 };
 
-export default function RootLayout(): JSX.Element {
+const RootLayout: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <PaperProvider theme={theme}>
@@ -40,4 +40,6 @@ export default function RootLayout(): JSX.Element {
       </PaperProvider>
     </QueryClientProvider>
   );
-}
+};
+
+export default RootLayout;
