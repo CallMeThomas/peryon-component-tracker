@@ -1,8 +1,10 @@
-﻿using Peryon.SharedKernel.Interfaces;
+using Peryon.SharedKernel.Interfaces;
 using Peryon.Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Peryon.Core.Interfaces;
 using Peryon.Infrastructure.FileService;
+using Peryon.Application.Interfaces;
+using Peryon.Infrastructure.ExternalAuth;
 
 namespace Peryon.Infrastructure;
 
@@ -25,8 +27,9 @@ public static class DefaultInfrastructureModule
     private static void RegisterCommonDependencies(IServiceCollection services)
     {
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-
         services.AddScoped(typeof(EfRepository<>));
+
+        services.AddHttpClient<IExternalAuthService, StravaExternalAuthService>();
     }
 
     private static void RegisterDevelopmentOnlyDependencies(IServiceCollection services)

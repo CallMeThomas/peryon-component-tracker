@@ -7,7 +7,7 @@ public class GetUserResponse
     public required Guid Id { get; init; }
     public required string Name { get; init; }
     public required string Email { get; init; }
-    public required Guid AthleteId { get; init; }
+    public required long StravaId { get; init; }
 
 
     public static GetUserResponse FromEntity(Core.Entities.User user)
@@ -17,7 +17,7 @@ public class GetUserResponse
             Id = user.Id,
             Name = user.Name.ToString(),
             Email = user.Email,
-            AthleteId = user.AthleteId
+            StravaId = user.StravaId
         };
     }
 }

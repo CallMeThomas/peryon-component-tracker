@@ -102,7 +102,7 @@ export const useLinkStravaGear = () => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, { bikeId: string; stravaGearId: string }>({
-    mutationFn: async ({ bikeId, stravaGearId }) => {
+    mutationFn: async ({ bikeId, stravaGearId }: { bikeId: string; stravaGearId: string }) => {
       return makeRequest<void>({
         method: 'POST',
         url: `/bikes/${bikeId}/link-strava-gear`,
@@ -122,7 +122,7 @@ export const useUnlinkStravaGear = () => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, string>({
-    mutationFn: async bikeId => {
+    mutationFn: async (bikeId: string) => {
       return makeRequest<void>({
         method: 'DELETE',
         url: `/bikes/${bikeId}/unlink-strava-gear`,

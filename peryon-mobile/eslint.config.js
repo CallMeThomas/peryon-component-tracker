@@ -47,6 +47,8 @@ module.exports = [
         // TypeScript JSX globals
         JSX: 'readonly',
         React: 'readonly',
+        // Fetch API
+        fetch: 'readonly',
       },
     },
     plugins: {
@@ -98,7 +100,7 @@ module.exports = [
       'react-native/no-color-literals': 'warn',
       
       // General rules
-      'no-console': ['warn', { allow: ['error', 'warn', 'info'] }],
+      'no-console': ['warn', { allow: ['error', 'warn', 'debug', 'info'] }],
       'prefer-const': 'error',
       'no-var': 'error',
     },

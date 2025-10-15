@@ -17,10 +17,9 @@ public static class DefaultApplicationModule
 
         RegisterCommonDependencies(services);
     }
-
     private static void RegisterCommonDependencies(IServiceCollection services)
     {
-        // Register application services here
+        // Add common services
     }
 
     private static void RegisterDevelopmentOnlyDependencies(IServiceCollection services)

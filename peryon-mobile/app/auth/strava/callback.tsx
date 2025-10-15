@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const AuthCallback: React.FC = () => {
-  const { code, state, error } = useLocalSearchParams();
+  const { error, session_token } = useLocalSearchParams();
   const router = useRouter();
-  const { processAuthCallback } = useAuth();
+  const { processSessionToken } = useAuth();
 
   const styles = StyleSheet.create({
     container: {
@@ -22,26 +22,32 @@ const AuthCallback: React.FC = () => {
   });
 
   useEffect(() => {
-    console.info('🔄 Auth callback received:', { code, state, error });
+    console.info('🔄 Auth callback received:', { error, session_token });
 
     if (error) {
       console.error('❌ OAuth error:', error);
-      // Handle error - redirect to login or show error
       router.replace('/');
       return;
     }
 
-    if (code) {
-      console.info('✅ Authorization code received:', code);
-      // Process the authorization code
-      processAuthCallback(code as string, state as string);
-      // Redirect to main app
-      router.replace('/(tabs)');
-    } else {
-      console.warn('⚠️ No code received, redirecting to home');
+    if (session_token) {
+      console.info('🎫 Session token received, exchanging for auth tokens...');
+      
+      processSessionToken(session_token as string)
+        .then(() => {
+          console.info('🎉 Authentication processing complete');
+          router.replace('/(tabs)');
+        })
+        .catch((error: any) => {
+          console.error('❌ Authentication processing failed:', error);
+          router.replace('/');
+        });
+    }
+    else {
+      console.warn('⚠️ No session token, redirecting to home');
       router.replace('/');
     }
-  }, [code, state, error, processAuthCallback, router]);
+  }, [error, session_token, processSessionToken, router]);
 
   return (
     <View style={styles.container}>

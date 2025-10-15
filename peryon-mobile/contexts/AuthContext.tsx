@@ -4,21 +4,33 @@ import React, {
   useState,
   useEffect,
   ReactNode,
+  useRef,
 } from 'react';
 import * as AuthSession from 'expo-auth-session';
-import * as Crypto from 'expo-crypto';
+import * as SecureStore from 'expo-secure-store';
 import { User } from '../types';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  stravaAccessToken: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   loading: boolean;
   login: () => Promise<void>;
   logout: () => void;
-  refreshUserData: () => Promise<void>;
-  processAuthCallback: (code: string, state: string) => Promise<void>;
+  processSessionToken: (sessionToken: string) => Promise<void>;
+  refreshTokens: () => Promise<boolean>;
 }
+
+interface TokenData {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+}
+
+// Storage keys
+const TOKEN_KEY = 'strava_tokens';
+const USER_KEY = 'user_data';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -29,16 +41,115 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [stravaAccessToken, setStravaAccessToken] = useState<string | null>(
+  const [accessToken, setAccessToken] = useState<string | null>(
     null
   );
-  const [loading, setLoading] = useState(true);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const loadingRef = useRef(false);
 
-  // Strava OAuth configuration
-  const redirectUri = AuthSession.makeRedirectUri({
-    scheme: 'peryon',
-    path: 'auth',
-  });
+  const storeTokens = async (tokenData: TokenData) => {
+    try {
+      await SecureStore.setItemAsync(TOKEN_KEY, JSON.stringify(tokenData));
+    } catch (error) {
+      console.error('Error storing tokens:', error);
+    }
+  };
+
+  const getStoredTokens = async (): Promise<TokenData | null> => {
+    try {
+      const tokenString = await SecureStore.getItemAsync(TOKEN_KEY);
+      return tokenString ? JSON.parse(tokenString) : null;
+    } catch (error) {
+      console.error('Error retrieving tokens:', error);
+      return null;
+    }
+  };
+
+  const storeUser = async (userData: User) => {
+    try {
+      await SecureStore.setItemAsync(USER_KEY, JSON.stringify(userData));
+    } catch (error) {
+      console.error('Error storing user data:', error);
+    }
+  };
+
+  const getStoredUser = async (): Promise<User | null> => {
+    try {
+      const userString = await SecureStore.getItemAsync(USER_KEY);
+      return userString ? JSON.parse(userString) : null;
+    } catch (error) {
+      console.error('Error retrieving user data:', error);
+      return null;
+    }
+  };
+
+  const clearStoredAuth = async () => {
+    try {
+      await SecureStore.deleteItemAsync(TOKEN_KEY);
+      await SecureStore.deleteItemAsync(USER_KEY);
+    } catch (error) {
+      console.error('Error clearing stored auth:', error);
+    }
+  };
+
+  const isTokenExpired = (expiresAt: number): boolean => {
+    const now = Date.now();
+    const buffer = 5 * 60 * 1000; // 5 minutes
+    return now >= expiresAt - buffer;
+  };
+
+  const refreshTokens = async (): Promise<boolean> => {
+    try {
+      const storedTokens = await getStoredTokens();
+      if (!storedTokens?.refreshToken) {
+        console.warn('No refresh token available');
+        return false;
+      }
+
+      console.info('🔄 Refreshing access token via backend...');
+
+      const apiUrl =
+        process.env.EXPO_PUBLIC_API_URL || 'https://localhost:7239/api';
+
+      const response = await fetch(`${apiUrl}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`, // Current access token for auth
+        },
+        body: JSON.stringify({
+          refresh_token: storedTokens.refreshToken,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to refresh token:', response.status);
+        return false;
+      }
+
+      const responseData = await response.json();
+      const newTokenData: TokenData = {
+        accessToken: responseData.access_token,
+        refreshToken: responseData.refresh_token,
+        expiresAt: Date.now() + responseData.expires_in * 1000,
+      };
+
+      // Store new tokens
+      await storeTokens(newTokenData);
+
+      // Update state
+      setAccessToken(newTokenData.accessToken);
+      setRefreshToken(newTokenData.refreshToken);
+
+      console.info('✅ Token refreshed successfully');
+      return true;
+    } catch (error) {
+      console.error('❌ Error refreshing token:', error);
+      return false;
+    }
+  };
+
+  const redirectUri = `${process.env.EXPO_PUBLIC_API_URL}/auth/strava/mobile-callback`;
 
   const discovery = {
     authorizationEndpoint: 'https://www.strava.com/oauth/authorize',
@@ -47,144 +158,172 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (): Promise<void> => {
     try {
-      setLoading(true);
+      if (loadingRef.current === true) {
+        console.warn('Login already in progress');
+        return;
+      }
+      loadingRef.current = true;
 
-      // Create code verifier and challenge for PKCE
-      const codeChallenge = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        'code_verifier_here', // In production, generate a random string
-        { encoding: Crypto.CryptoEncoding.BASE64 }
-      );
+      // Generate random state for security
+      const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
       const request = new AuthSession.AuthRequest({
-        clientId:
-          process.env.EXPO_PUBLIC_STRAVA_CLIENT_ID || 'your_strava_client_id',
+        clientId: process.env.EXPO_PUBLIC_STRAVA_CLIENT_ID,
         scopes: ['read,activity:read'],
         redirectUri,
         responseType: AuthSession.ResponseType.Code,
-        state: 'random_state_string',
+        state,
         extraParams: {
           approval_prompt: 'force',
         },
       });
 
-      const result = await request.promptAsync(discovery);
-
-      console.info('📱 OAuth result:', result);
-
-      if (result.type === 'success') {
-        const { code } = result.params;
-
-        // Exchange code for access token
-        // This should be done through your backend API for security
-        // For now, we'll simulate a successful login
-
-        const mockUser: User = {
-          id: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john.doe@example.com',
-          stravaId: '12345',
-          profilePicture: 'https://via.placeholder.com/150',
-        };
-
-        setIsAuthenticated(true);
-        setUser(mockUser);
-        setStravaAccessToken('mock_access_token');
-      } else {
-        // Login cancelled or failed
-        setIsAuthenticated(false);
-        setUser(null);
-        setStravaAccessToken(null);
-      }
+      await request.promptAsync(discovery);
+     // The actual handling of the response is done in the AuthCallback component      
     } catch (error) {
       console.error('Login error:', error);
       setIsAuthenticated(false);
       setUser(null);
-      setStravaAccessToken(null);
+      setAccessToken(null);
     } finally {
-      setLoading(false);
+      loadingRef.current = false;
     }
   };
 
-  const logout = (): void => {
+  const logout = async (): Promise<void> => {
+    await clearStoredAuth();
     setIsAuthenticated(false);
     setUser(null);
-    setStravaAccessToken(null);
+    setAccessToken(null);
+    setRefreshToken(null);
   };
 
-  const refreshUserData = async (): Promise<void> => {
+  const processSessionToken = async (sessionToken: string): Promise<void> => {
     try {
-      setLoading(true);
-      // This would typically call your backend API to refresh user data
-      // For now, we'll just simulate a refresh
-      console.info('Refreshing user data...');
+      if (loadingRef.current === true) {
+        console.warn('Session token processing already in progress');
+        return;
+      }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    } catch (error) {
-      console.error('Error refreshing user data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      loadingRef.current = true;
+      console.info('🎫 Processing session token...');
 
-  const processAuthCallback = async (
-    code: string,
-    state: string
-  ): Promise<void> => {
-    try {
-      setLoading(true);
-      console.info('🔄 Processing auth callback with code:', code);
+      // Exchange session token for actual auth tokens from backend
+      const apiUrl =
+        process.env.EXPO_PUBLIC_API_URL || 'https://localhost:7239/api';
 
-      // In a real app, you would:
-      // 1. Send the authorization code to your backend
-      // 2. Your backend exchanges it for an access token with Strava
-      // 3. Your backend returns user data and stores the token securely
+      const response = await fetch(`${apiUrl}/auth/strava/session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionToken: sessionToken,
+        }),
+      });
 
-      // For now, we'll simulate a successful token exchange
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        throw new Error(`Session token exchange failed: ${response.status}`);
+      }
 
-      const mockUser: User = {
-        id: '1',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        stravaId: '12345',
-        profilePicture: 'https://via.placeholder.com/150',
+      const responseData = await response.json();
+
+      const user: User = {
+        id: responseData.user.id,
+        firstName: responseData.user.firstName,
+        lastName: responseData.user.lastName,
+        email: responseData.user.email,
+        stravaId: responseData.user.stravaId,
+        profilePicture:
+          responseData.user.profilePicture,
       };
 
-      setIsAuthenticated(true);
-      setUser(mockUser);
-      setStravaAccessToken('mock_access_token');
+      const tokens: TokenData = {
+        accessToken: responseData.access_token,
+        refreshToken: responseData.refresh_token,
+        expiresAt: Date.now() + responseData.expires_in * 1000,
+      };
 
-      console.info('✅ Authentication successful!');
+      await Promise.all([storeTokens(tokens), storeUser(user)]);
+
+      setIsAuthenticated(true);
+      setUser(user);
+      setAccessToken(tokens.accessToken);
+      setRefreshToken(tokens.refreshToken);
+
+      console.info('✅ Session token authentication successful!');
     } catch (error) {
-      console.error('❌ Error processing auth callback:', error);
+      console.error('❌ Error processing session token:', error);
       setIsAuthenticated(false);
       setUser(null);
-      setStravaAccessToken(null);
+      setAccessToken(null);
+      setRefreshToken(null);
     } finally {
-      setLoading(false);
+      loadingRef.current = false;
     }
   };
 
   useEffect(() => {
-    // Check if user is already authenticated on app start
-    // This would typically check stored tokens or session
-    // For now, we'll just set loading to false
-    setLoading(false);
-  }, []);
+    const initializeAuth = async () => {
+      try {
+        if (loadingRef.current === true) {
+          console.warn('Auth initialization already in progress');
+          return;
+        }
+        loadingRef.current = true;
+
+        const [storedTokens, storedUser] = await Promise.all([
+          getStoredTokens(),
+          getStoredUser(),
+        ]);
+
+        if (storedTokens && storedUser) {
+          if (isTokenExpired(storedTokens.expiresAt)) {
+            console.info('🕒 Access token expired, attempting refresh...');
+
+            const refreshSuccessful = await refreshTokens();
+
+            if (refreshSuccessful) {
+              setIsAuthenticated(true);
+              setUser(storedUser);
+            } else {
+              console.warn(
+                '🚫 Token refresh failed, requiring re-authentication'
+              );
+              await clearStoredAuth();
+            }
+          } else {
+            console.info('✅ Valid tokens found, restoring session');
+            setIsAuthenticated(true);
+            setUser(storedUser);
+            setAccessToken(storedTokens.accessToken);
+            setRefreshToken(storedTokens.refreshToken);
+          }
+        } else {
+          console.info('ℹ️ No stored authentication found');
+        }
+      } catch (error) {
+        console.error('❌ Error initializing auth:', error);
+        await clearStoredAuth();
+      } finally {
+        loadingRef.current = false;
+      }
+    };
+
+    initializeAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // We want this to run only once on mount
 
   const contextValue: AuthContextType = {
     isAuthenticated,
     user,
-    stravaAccessToken,
-    loading,
+    accessToken,
+    refreshToken,
+    loading: loadingRef.current,
     login,
     logout,
-    refreshUserData,
-    processAuthCallback,
+    processSessionToken,
+    refreshTokens,
   };
 
   return (

@@ -36,7 +36,25 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 .IsRequired();
         });
 
-        builder.Property(u => u.AthleteId)
+        builder.Property(u => u.StravaId)
             .IsRequired();
+
+        builder.HasIndex(u => u.StravaId)
+            .IsUnique();
+
+        builder.Property(u => u.ProfilePicture)
+            .HasMaxLength(500)
+            .IsRequired(false);
+
+        builder.Property(u => u.StravaAccessToken)
+            .HasMaxLength(1000)
+            .IsRequired(false);
+
+        builder.Property(u => u.StravaRefreshToken)
+            .HasMaxLength(1000)
+            .IsRequired(false);
+
+        builder.Property(u => u.TokenExpiresAt)
+            .IsRequired(false);
     }
 }
